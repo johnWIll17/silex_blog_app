@@ -1,0 +1,13 @@
+<h1>Index page</h1>
+
+
+{% for article in article_full %}
+{{ article['title'] }}
+<br>
+{% endfor %}
+
+{% for flash in app.session.getFlashBag.get('message') %}
+{{ flash.type }}
+<br>
+{{ flash.content }}
+{% endfor %}

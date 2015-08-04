@@ -26,14 +26,14 @@ class Article implements ControllerProviderInterface {
         $articles->get('/{id}', array($article_controller, 'showAction'))
             ->bind('article_show');
 
-        $articles->get('/{id}/edit', array($article_controller, 'indexAction'))
+        $articles->get('/{id}/edit', array($article_controller, 'editAction'))
             ->bind('article_edit');
 
-        $articles->match('/{id}', array($article_controller, 'indexAction'))
+        $articles->match('/{id}', array($article_controller, 'updateAction'))
             ->bind('article_update')
             ->method('post|put');
 
-        $articles->match('/{id}/delete', array($article_controller, 'indexAction'))
+        $articles->match('/{id}/delete', array($article_controller, 'deleteAction'))
             ->bind('article_delete')
             ->method('delete');
 

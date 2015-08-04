@@ -2,7 +2,6 @@
 
 use Silex\Provider\FormServiceProvider;
 
-
 //form
 $app->register(new FormServiceProvider());
 $app->register(new Silex\Provider\ValidatorServiceProvider());
@@ -34,3 +33,5 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     )
 ));
 
+$app->register(new MyApp\Service\Provider\ArticleServiceProvider());
+$app->register(new Silex\Provider\SessionServiceProvider());
