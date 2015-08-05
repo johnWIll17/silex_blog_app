@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use MyApp\Controller\BaseController;
 use MyApp\Form\ArticleType;
+use MyApp\Form\CommentType;
 
 class ArticleController extends BaseController {
 
@@ -55,12 +56,16 @@ class ArticleController extends BaseController {
 
     public function showAction($id) {
         $article = $this->app['article.service']->getById($id);
+        $comments = $this->app['comment.service']->getArticleComments($id);
 
         $delete_form = $this->deleteArticleForm($id);
+        $comment_form = $this->createCommentForm($id);
 
         return $this->app['twig']->render('articles/show.html.twig', array(
             'article' => $article,
-            'delete_form' => $delete_form->createView()
+            'delete_form' => $delete_form->createView(),
+            'comment_form' => $comment_form->createView(),
+            'comments' => $comments
         ));
     }
 
@@ -144,6 +149,17 @@ class ArticleController extends BaseController {
                 'method' => 'DELETE'
             ))
             ->add('submit', 'submit', array('label' => 'Delete Article'))
+            ->getForm()
+        ;
+    }
+
+    private function createCommentForm($id) {
+        return $this->app['form.factory']
+            ->createBuilder(new CommentType(), null, array(
+                'action' => $this->app['url_generator']->generate('comment_create', array('article_id' => $id)),
+                'method' => 'POST'
+            ))
+            ->add('submit', 'submit', array('label' => 'Add Comment'))
             ->getForm()
         ;
     }

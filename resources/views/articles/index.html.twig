@@ -19,7 +19,7 @@
 {{ flash.content }}
 {% endfor %}
 
-<ul>
+<ul class="paginate">
     {% for page in range(1, page_total) %}
         {% if page == 1 %}
             <li><a href="{{ path('articles') }}">Page {{ page }}</a></li>

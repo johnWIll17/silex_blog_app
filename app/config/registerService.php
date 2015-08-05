@@ -34,4 +34,5 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 ));
 
 $app->register(new MyApp\Service\Provider\ArticleServiceProvider());
+$app->register(new MyApp\Service\Provider\CommentServiceProvider());
 $app->register(new Silex\Provider\SessionServiceProvider());

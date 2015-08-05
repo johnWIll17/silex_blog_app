@@ -15,4 +15,15 @@
 <br />
 {{ form(delete_form) }}
 
+
+<hr>
+{{ form(comment_form) }}
+
+<hr>
+
+{% for comment in comments %}
+{{ comment['comment'] }}
+<br>
+{% endfor %}
+
 {%- endblock %}
