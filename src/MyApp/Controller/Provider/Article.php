@@ -2,8 +2,8 @@
 
 namespace MyApp\Controller\Provider;
 
-use Silex\ControllerProviderInterface;
 use Silex\Application;
+use Silex\ControllerProviderInterface;
 use MyApp\Controller\ArticleController;
 
 class Article implements ControllerProviderInterface {
