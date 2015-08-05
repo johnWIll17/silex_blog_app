@@ -31,11 +31,12 @@ class Article implements ControllerProviderInterface {
 
         $articles->match('/{id}', array($article_controller, 'updateAction'))
             ->bind('article_update')
-            ->method('post|put');
+            ->method('post');
 
+        //$articles->match('/{id}/delete', array($article_controller, 'deleteAction'))
         $articles->match('/{id}/delete', array($article_controller, 'deleteAction'))
             ->bind('article_delete')
-            ->method('delete');
+            ->method('post|delete');
 
 
         return $articles;

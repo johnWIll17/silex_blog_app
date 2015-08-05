@@ -1,9 +1,16 @@
+{% extends 'layout/layout.html.twig' %}
+
+{% block title -%}List articles{% endblock %}
+
+{% block body -%}
+
 <h1>Index page</h1>
 
 
 {% for article in article_full %}
-{{ article['title'] }}
-<br>
+    {{ article['title'] }}
+    <a href="{{ path('article_show', { 'id': article['id'] }) }}">Show</a>
+    <br>
 {% endfor %}
 
 {% for flash in app.session.getFlashBag.get('message') %}
@@ -11,3 +18,16 @@
 <br>
 {{ flash.content }}
 {% endfor %}
+
+<ul>
+    {% for page in range(1, page_total) %}
+        {% if page == 1 %}
+            <li><a href="{{ path('articles') }}">Page {{ page }}</a></li>
+        {% else %}
+            <li><a href="{{ path('articles', { 'page': page}) }}">Page {{ page }}</a></li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+
+{%- endblock %}

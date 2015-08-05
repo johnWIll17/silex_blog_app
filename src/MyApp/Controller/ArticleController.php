@@ -10,19 +10,20 @@ use MyApp\Form\ArticleType;
 
 class ArticleController extends BaseController {
 
-    public function indexAction() {
-        $article_full = $this->app['article.service']->getAll();
+    public function indexAction(Request $request) {
+        //$article_full = $this->app['article.service']->paginate();
+        //$article_full = $this->app['article.service']->getAll();
+
+        $page = $request->get('page') ? $request->get('page') : 1;
+        $article_full = $this->app['article.service']->paginate($page);
+
         return $this->app['twig']->render('articles/index.html.twig', array(
-            'article_full' => $article_full
+            'article_full' => $article_full,
+            'page_total' => $this->app['article.service']->totalPageArticle()
         ));
     }
     public function newAction() {
-        $options = array(
-            'form_action' => $this->app['url_generator']->generate('article_create'),
-            'form_method' => 'POST',
-            'submit_label' => 'Create Article'
-        );
-        $form = $this->createArticleForm($options);
+        $form = $this->createArticleForm();
 
         return $this->app['twig']->render('articles/new.html.twig', array(
             'form' => $form->createView()
@@ -30,16 +31,9 @@ class ArticleController extends BaseController {
     }
 
     public function createAction(Request $request) {
-        $options = array(
-            'form_action' => $this->app['url_generator']->generate('article_create'),
-            'form_method' => 'POST',
-            'submit_label' => 'Create Article'
-        );
-        $form = $this->createArticleForm($options);
+        $form = $this->createArticleForm();
 
         $form->handleRequest($request);
-        dump($form);
-        die;
 
         if ($form->isValid()) {
 
@@ -62,95 +56,103 @@ class ArticleController extends BaseController {
     public function showAction($id) {
         $article = $this->app['article.service']->getById($id);
 
+        $delete_form = $this->deleteArticleForm($id);
+
         return $this->app['twig']->render('articles/show.html.twig', array(
-            'article' => $article
+            'article' => $article,
+            'delete_form' => $delete_form->createView()
         ));
     }
 
-    //working
-    public function editAction(Request $request, $id) {
-        $options = array(
-            'form_action' => $this->app['url_generator']->generate('article_update', array('id' => $id)),
-            'form_method' => 'PUT',
-            'submit_label' => 'Update Article'
-        );
+
+    public function editAction($id) {
         $article = $this->app['article.service']->getById($id);
 
-        $form = $this->createArticleForm($options, $article);
+        $form = $this->updateArticleForm($article, $id);
 
         return $this->app['twig']->render('articles/edit.html.twig', array(
             'form' => $form->createView()
         ));
-
     }
-    //
-    public function updateAction(Request $request, $id) {
-        $options = array(
-            'form_action' => $this->app['url_generator']->generate('article_update', array('id' => $id)),
-            'form_method' => 'PUT',
-            'submit_label' => 'Update Article'
-        );
 
+    public function updateAction($id, Request $request) {
         $article = $this->app['article.service']->getById($id);
 
-        $form = $this->createArticleForm($options, $article);
+        $form = $this->updateArticleForm($article, $id);
 
         $form->handleRequest($request);
-        dump($form->getData());
-        die;
-
-        ////////////////////////////////
-        $options = array(
-            'form_action' => $this->app['url_generator']->generate('article_create'),
-            'form_method' => 'POST',
-            'submit_label' => 'Create Article'
-        );
-        $form = $this->createArticleForm($options);
-
-        $form->handleRequest($request);
-        dump($form);
-        die;
-        ///////////////////////////////
-
-
 
         if ($form->isValid()) {
-            return "ok";
-        } else {
-            return "not ok";
-        }
+            $ret = $this->app['article.service']->updateToArticle($id, $form->getData());
 
-        if ($form->isValid()) {
-            $this->app['article.service']->updateToArticle($id);
+            if ($ret === 1) {
+                $this->app['session']->getFlashBag()->add('message', array(
+                    'type' => 'success',
+                    'content' => 'You have updated article successfully!'
+                ));
 
-            return $this->app->redirect($this->app['url_generator']->generate('article_show', array('id' => $id)));
+                return $this->app->redirect($this->app['url_generator']->generate('article_show', array('id' => $id)));
+            }
+
         } else {
-            return "something wrong when updating article";
+
+            return $this->app['twig']->render('articles/edit.html.twig', array(
+                'form' => $form->createView()
+            ));
         }
 
     }
-    public function deleteAction() {}
+    public function deleteAction($id) {
+        $delete_form = $this->deleteArticleForm($id);
+
+        $this->app['article.service']->deleteById($id);
+        $this->app['session']->getFlashBag()->add('message', array(
+            'type' => 'success',
+            'content' => 'You have deleted an article successfully!'
+        ));
+
+        return $this->app->redirect($this->app['url_generator']->generate('articles'));
+    }
 
     //private function
-    private function createArticleForm($options, $data = null) {
+    private function createArticleForm() {
         return $this->app['form.factory']
-            ->createBuilder(new ArticleType(), $data, array(
-                //'action' => $this->app['url_generator']->generate('article_create'),
-                //'action' => $this->app['url_generator']->generate($options['form_action']),
-                'action' => $options['form_action'],
-                'method' => $options['form_method']
+            ->createBuilder(new ArticleType(), null, array(
+                'action' => $this->app['url_generator']->generate('article_create'),
+                'method' => 'POST'
             ))
-            //->add('submit', 'submit', array('label' => 'Create Article'))
-            ->add('submit', 'submit', array('label' => $options['submit_label']))
+            ->add('submit', 'submit', array('label' => 'Create Article'))
             ->getForm()
         ;
     }
 
-    private function allowFields($arr, $allow_fields) {
-        return array_filter($arr, function($k) use ($allow_fields) {
-            if ( in_array($k, $allow_fields) ) {
-                return true;
-            }
-        }, ARRAY_FILTER_USE_KEY);
+    private function updateArticleForm($data, $id) {
+        return $this->app['form.factory']
+            ->createBuilder(new ArticleType(), $data, array(
+                'action' => $this->app['url_generator']->generate('article_update', array('id' => $id)),
+                'method' => 'POST'
+            ))
+            ->add('submit', 'submit', array('label' => 'Update Article'))
+            ->getForm()
+        ;
     }
+
+    private function deleteArticleForm($id) {
+        return $this->app['form.factory']
+            ->createBuilder('form', null, array(
+                'action' => $this->app['url_generator']->generate('article_delete', array('id' => $id)),
+                'method' => 'DELETE'
+            ))
+            ->add('submit', 'submit', array('label' => 'Delete Article'))
+            ->getForm()
+        ;
+    }
+
+    // private function allowFields($arr, $allow_fields) {
+    //     return array_filter($arr, function($k) use ($allow_fields) {
+    //         if ( in_array($k, $allow_fields) ) {
+    //             return true;
+    //         }
+    //     }, ARRAY_FILTER_USE_KEY);
+    // }
 }

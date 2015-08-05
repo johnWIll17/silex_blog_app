@@ -47,10 +47,12 @@ class ArticleService {
     public function deleteById($id) {
         $query = $this->article_model
             ->getConnection()
-            ->createQueryBuilder
+            ->createQueryBuilder()
             ->delete($this->article_model->getTable())
-            ->where('id = ?')
+            ->where('id = ' . $id)
         ;
+
+        return $this->article_model->getConnection()->executeUpdate($query);
         //return true/false
     }
 
@@ -65,17 +67,12 @@ class ArticleService {
         $this->article_model->getConnection()->executeUpdate($query);
     }
 
-    public function updateToArticle($id, $options = '') {
-        $query = $this->article_model
+    public function updateToArticle($id, $data = '') {
+        return $this->article_model
             ->getConnection()
-            ->createQueryBuilder()
-            ->where('id = ' . $id)
-            ->update($this->article_model->getTable())
-            ->set('articles.title', '"new update"')
-            ->set('articles.description', '"new description"')
+            ->update($this->article_model->getTable(), $data, array("id" => $id))
         ;
-
-        $this->article_model->getConnection()->executeUpdate($query);
+        // $this->article_model->getConnection()->executeUpdate($query);
     }
 
 
@@ -94,13 +91,13 @@ class ArticleService {
         return $this->article_model->getConnection()->executeQuery($query)->fetchAll();
     }
 
-    //private
-    private function totalPageArticle() {
+    public function totalPageArticle() {
         $total_articles = count($this->getAll());
 
         return ceil($total_articles / self::PER_PAGE);
     }
 
+    //private
     private function quoteValues(array $options) {
         return array_map(function($val) {
             return $this->article_model->getConnection()->quote($val);
