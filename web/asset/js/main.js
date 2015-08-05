@@ -10,16 +10,18 @@ button.addEventListener('click', function(e) {
     var answer = confirm('Are you sure');
 
     if (answer) {
-        var xhr = new XMLHttpRequest();
+        deleteForm.submit();
 
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                window.location = '/blog_app/web/articles/';
-            }
-        }
-
-        xhr.open('POST', action);
-        xhr.send();
+        // var xhr = new XMLHttpRequest();
+        //
+        // xhr.onreadystatechange = function() {
+        //     if (xhr.readyState === 4) {
+        //         window.location = '/blog_app/web/articles/';
+        //     }
+        // }
+        //
+        // xhr.open('POST', action);
+        // xhr.send();
     } else {
         console.log('quit');
         return;
