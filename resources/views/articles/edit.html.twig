@@ -1,4 +1,18 @@
-<h1>Edit page</h1>
+{% extends 'layout/layout.html.twig' %}
+{% block title %} Edit an article {% endblock %}
+{% block bodyclass %}edit-single-page{% endblock %}
+{% block body %}
+    {% include 'share/nav.html.twig' %}
+    <div class="container">
 
-{{ form(form) }}
+        {% include 'share/flash.html.twig' %}
+
+        <div class="page-header">
+            <p>Edit</p>
+        </div>
+        {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+        {{ form(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    </div>
+
+{% endblock %}
 

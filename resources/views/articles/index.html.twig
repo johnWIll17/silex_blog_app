@@ -1,33 +1,49 @@
 {% extends 'layout/layout.html.twig' %}
 
 {% block title -%}List articles{% endblock %}
+{% block bodyclass %}homepage{% endblock %}
 
 {% block body -%}
 
-<h1>Index page</h1>
+{% include 'share/nav.html.twig' %}
 
+<div class='container'>
+    {% include 'share/flash.html.twig' %}
 
-{% for article in article_full %}
-    {{ article['title'] }}
-    <a href="{{ path('article_show', { 'id': article['id'] }) }}">Show</a>
-    <br>
-{% endfor %}
+    <div class="page-header">
+        <p id="page-title">Articles</p>
+        <a class="btn btn-success create-article" href="{{ path('article_new') }}">New Article</a>
+    </div>
 
-{% for flash in app.session.getFlashBag.get('message') %}
-{{ flash.type }}
-<br>
-{{ flash.content }}
-{% endfor %}
+    <div class="list-articles">
+        {% for article in article_full %}
+            <article>
+                <div class="article-title">
+                    <a href="{{ path("article_show", {'id': article['id']}) }}">{{ article.title }}</a>
+                </div>
+                <div class="article-content">
+                    <p>{{ article.description }}</p>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
 
-<ul class="paginate">
-    {% for page in range(1, page_total) %}
-        {% if page == 1 %}
-            <li><a href="{{ path('articles') }}">Page {{ page }}</a></li>
-        {% else %}
-            <li><a href="{{ path('articles', { 'page': page}) }}">Page {{ page }}</a></li>
-        {% endif %}
-    {% endfor %}
-</ul>
+    <div class="pagination">
+        <ul>
+            {% for page in range(1, page_total) %}
+                {% if current_page == page %}
+                    <li><span>{{page}}</span></li>
+                {% else %}
+                    {% if page == 1 %}
+                        <li><a href="{{ path('articles') }}">{{ page }}</a></li>
+                    {% else %}
+                        <li><a href="{{ path('articles', { 'page': page}) }}">{{ page }}</a></li>
+                    {% endif %}
 
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 
-{%- endblock %}
+{% endblock %}

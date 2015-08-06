@@ -1,0 +1,35 @@
+{% extends 'layout/layout.html.twig' %}
+
+{% block body -%}
+
+<h1>Show page</h1>
+
+{% for flash in app.session.getFlashBag.get('message') %}
+{{ flash.content }}
+{% endfor %}
+
+
+{{ article['title'] }}
+<br />
+{{ article['description'] }}
+<br />
+{{ form(delete_form) }}
+
+
+<hr>
+{{ form(comment_form) }}
+
+<hr>
+
+{% for comment in comments %}
+{{ comment['comment'] }}
+<br>
+{% endfor %}
+
+{%- endblock %}
+
+
+
+
+
+

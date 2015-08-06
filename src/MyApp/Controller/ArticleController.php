@@ -17,17 +17,22 @@ class ArticleController extends BaseController {
 
         $page = $request->get('page') ? $request->get('page') : 1;
         $article_full = $this->app['article.service']->paginate($page);
+        $user_email = 'test@example.com';
 
         return $this->app['twig']->render('articles/index.html.twig', array(
             'article_full' => $article_full,
-            'page_total' => $this->app['article.service']->totalPageArticle()
+            'page_total' => $this->app['article.service']->totalPageArticle(),
+            'current_page' => $page,
+            'user_email' => $user_email
         ));
     }
     public function newAction() {
         $form = $this->createArticleForm();
+        $user_email = 'test@example.com';
 
         return $this->app['twig']->render('articles/new.html.twig', array(
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'user_email' => $user_email
         ));
     }
 
@@ -61,11 +66,13 @@ class ArticleController extends BaseController {
         $delete_form = $this->deleteArticleForm($id);
         $comment_form = $this->createCommentForm($id);
 
+        $user_email = 'test@example.com';
         return $this->app['twig']->render('articles/show.html.twig', array(
             'article' => $article,
             'delete_form' => $delete_form->createView(),
             'comment_form' => $comment_form->createView(),
-            'comments' => $comments
+            'comments' => $comments,
+            'user_email' => $user_email
         ));
     }
 
@@ -74,9 +81,11 @@ class ArticleController extends BaseController {
         $article = $this->app['article.service']->getById($id);
 
         $form = $this->updateArticleForm($article, $id);
+        $user_email = 'test@example.com';
 
         return $this->app['twig']->render('articles/edit.html.twig', array(
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'user_email' => $user_email
         ));
     }
 

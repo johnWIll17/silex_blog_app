@@ -1,29 +1,35 @@
 {% extends 'layout/layout.html.twig' %}
 
-{% block body -%}
+{% block title %} {{ article.title }} {% endblock %}
+{% block bodyclass %}single-page{% endblock %}
+{% block body %}
+    {% include 'share/nav.html.twig' %}
+    <div class="container">
+        {% form_theme comment_form 'bootstrap_3_horizontal_layout.html.twig' %}
+        <div class="page-header article-title">
+            <p>{{ (article.title) }}</p>
+            <a class="btn btn-success edit-article" href="{{ path('article_edit', {id: article.id}) }}">Edit Article</a>
+        </div>
+        <article>
+            <div class="article-author">
+                Created By :  <a>{{ "(article.username)" }}</a>
+            </div>
+            <div class="article-content">
+                {{ article.description }}
+            </div>
+        </article>
+        <div id="comment">
+                {{ form(comment_form, {'attr': {'novalidate': 'novalidate'}}) }}
+            <div class="comment-list col-sm-offset-2 col-sm-10">
+                {% for comment in comments %}
+                    <blockquote class="comment-user well well-sm">
+                        <p>{{ comment.comment }}</p>
+                        <!-- <footer>By: <cite title="Source Title">{#{ comment.username }#}</cite>  At {#{ comment.date_created }#}</footer> -->
+                    </blockquote>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
-<h1>Show page</h1>
+{% endblock %}
 
-{% for flash in app.session.getFlashBag.get('message') %}
-{{ flash.content }}
-{% endfor %}
-
-
-{{ article['title'] }}
-<br />
-{{ article['description'] }}
-<br />
-{{ form(delete_form) }}
-
-
-<hr>
-{{ form(comment_form) }}
-
-<hr>
-
-{% for comment in comments %}
-{{ comment['comment'] }}
-<br>
-{% endfor %}
-
-{%- endblock %}
