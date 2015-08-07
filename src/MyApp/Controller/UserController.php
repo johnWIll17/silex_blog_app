@@ -5,10 +5,32 @@ namespace MyApp\Controller;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use MyApp\Controller\BaseController;
 use MyApp\Form\LoginType;
 
+
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+
+
 class UserController extends BaseController {
+
+    public function testAuth(GetResponseEvent $event) {
+        //if (! $this->app['session']->get('hello worl') ) {
+        if ($this->app['request']->get('_route') !== 'article_new') {
+            //exit();
+            
+            // $event->setResponse($this->app['url_generator']->generate('article_new'));
+            //$response = new Response($this->app->redirect($this->app['url_generator']->generate('article_new')));
+            $response = new RedirectResponse( $this->app['url_generator']->generate('article_new') );
+
+
+            $event->setResponse($response);
+
+            // return $this->app->redirect($this->app['url_generator']->generate('article_new'));
+        }
+    }
 
     public function loginAction() {
         $form = $this->createLoginForm();

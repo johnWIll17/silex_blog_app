@@ -12,8 +12,6 @@ use MyApp\Form\CommentType;
 class ArticleController extends BaseController {
 
     public function indexAction(Request $request) {
-        dump($request);
-        die;
         $user_email = $this->app['session']->get('user')['email'];
         $user_id = $this->app['session']->get('user')['id'];
         //$article_full = $this->app['article.service']->paginate();
@@ -56,7 +54,6 @@ class ArticleController extends BaseController {
             ));
 
             return $this->app->redirect($this->app['url_generator']->generate('articles'));
-
         } else {
             return $this->app['twig']->render('articles/new.html.twig', array(
                 'form' => $form->createView()
@@ -65,9 +62,6 @@ class ArticleController extends BaseController {
     }
 
     public function showAction($id, Request $request) {
-        dump($request);
-        dump($request->attributes);
-        die;
         $article = $this->app['article.service']->getById($id);
         $comments = $this->app['comment.service']->getArticleComments($id);
 
