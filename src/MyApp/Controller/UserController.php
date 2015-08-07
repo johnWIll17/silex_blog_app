@@ -40,7 +40,6 @@ class UserController extends BaseController {
                 ));
 
                 return $this->app['twig']->render('users/login.html.twig', array(
-                    // 'invalid_user' => 'Your info is invalid!',
                     'login_form' => $form->createView()
                 ));
             } else {

@@ -12,16 +12,19 @@ use MyApp\Form\CommentType;
 class ArticleController extends BaseController {
 
     public function indexAction(Request $request) {
+        dump($request);
+        die;
+        $user_email = $this->app['session']->get('user')['email'];
+        $user_id = $this->app['session']->get('user')['id'];
         //$article_full = $this->app['article.service']->paginate();
         //$article_full = $this->app['article.service']->getAll();
 
         $page = $request->get('page') ? $request->get('page') : 1;
-        $article_full = $this->app['article.service']->paginate($page);
-        $user_email = 'test@example.com';
+        $article_full = $this->app['article.service']->paginate($user_id, $page);
 
         return $this->app['twig']->render('articles/index.html.twig', array(
             'article_full' => $article_full,
-            'page_total' => $this->app['article.service']->totalPageArticle(),
+            'page_total' => $this->app['article.service']->totalPageArticle($user_id),
             'current_page' => $page,
             'user_email' => $user_email
         ));
@@ -42,12 +45,14 @@ class ArticleController extends BaseController {
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $form_data = $form->getData();
+            $form_data += $this->userIdArr();
 
-            $this->app['article.service']->insertToArticle($form->getData());
+            $this->app['article.service']->insertToArticle($form_data);
 
             $this->app['session']->getFlashBag()->add('message', array(
                 'type' => 'success',
-                'content' => "You have created an article successfully!"
+                'message' => "You have created an article successfully!"
             ));
 
             return $this->app->redirect($this->app['url_generator']->generate('articles'));
@@ -59,7 +64,10 @@ class ArticleController extends BaseController {
         }
     }
 
-    public function showAction($id) {
+    public function showAction($id, Request $request) {
+        dump($request);
+        dump($request->attributes);
+        die;
         $article = $this->app['article.service']->getById($id);
         $comments = $this->app['comment.service']->getArticleComments($id);
 
@@ -102,7 +110,7 @@ class ArticleController extends BaseController {
             if ($ret === 1) {
                 $this->app['session']->getFlashBag()->add('message', array(
                     'type' => 'success',
-                    'content' => 'You have updated article successfully!'
+                    'message' => 'You have updated article successfully!'
                 ));
 
                 return $this->app->redirect($this->app['url_generator']->generate('article_show', array('id' => $id)));
@@ -122,7 +130,7 @@ class ArticleController extends BaseController {
         $this->app['article.service']->deleteById($id);
         $this->app['session']->getFlashBag()->add('message', array(
             'type' => 'success',
-            'content' => 'You have deleted an article successfully!'
+            'message' => 'You have deleted an article successfully!'
         ));
 
         return $this->app->redirect($this->app['url_generator']->generate('articles'));

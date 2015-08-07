@@ -11,8 +11,11 @@
         {% include 'share/flash.html.twig' %}
     </div>
     <div class="container">
-        {% form_theme login_form 'bootstrap_3_horizontal_layout.html.twig' %}
-        {{ form(login_form, {'attr': {'novalidate': 'novalidate'}}) }}
+        <div class="login_form">
+            <h1>Login to Your Account</h1>
+            {% form_theme login_form 'bootstrap_3_horizontal_layout.html.twig' %}
+            {{ form(login_form, {'attr': {'novalidate': 'novalidate'}}) }}
+        </div>
     </div>
 {#  #}
 {%- endblock %}

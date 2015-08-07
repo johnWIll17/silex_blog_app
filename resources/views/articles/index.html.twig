@@ -28,22 +28,27 @@
         {% endfor %}
     </div>
 
-    <div class="pagination">
-        <ul>
-            {% for page in range(1, page_total) %}
-                {% if current_page == page %}
-                    <li><span>{{page}}</span></li>
-                {% else %}
-                    {% if page == 1 %}
-                        <li><a href="{{ path('articles') }}">{{ page }}</a></li>
-                    {% else %}
-                        <li><a href="{{ path('articles', { 'page': page}) }}">{{ page }}</a></li>
-                    {% endif %}
 
+    <nav>
+      <ul class="pagination" id="main-pagination">
+        {% for page in range(1, page_total) %}
+
+            {% if current_page == page %}
+                <li class="active"><a href="{{ path('articles', { 'page': page }) }}">{{ page }}</a></li>
+            {% else %}
+                {% if page == 1 %}
+                    <li><a href="{{ path('articles') }}">{{ page }}</a></li>
+                {% else %}
+                    <li><a href="{{ path('articles', { 'page': page}) }}">{{ page }}</a></li>
                 {% endif %}
-            {% endfor %}
-        </ul>
-    </div>
+            {% endif %}
+
+        {% endfor %}
+      </ul>
+    </nav>
+
+
+
 </div>
 
 {% endblock %}
