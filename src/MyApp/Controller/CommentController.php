@@ -35,7 +35,7 @@ class CommentController extends BaseController {
         $form->handleRequest($request);
         $data = array(
             "article_id" => $article_id,
-            "user_id" => "45"
+            "user_id" => $this->userInfo()['id']
         );
 
         if ($form->isValid()) {

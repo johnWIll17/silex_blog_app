@@ -11,9 +11,9 @@ class CommentType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
             ->add('comment', 'textarea', array(
-                'constraints' => array(
-                    new Assert\Length(array('min' => 20, 'max' => 140))
-                )
+                // 'constraints' => array(
+                //     new Assert\Length(array('min' => 20, 'max' => 140))
+                // )
             ))
         ;
     }

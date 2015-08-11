@@ -12,5 +12,18 @@ class AuthenUserListener {
     public function testAuthenListener(GetResponseEvent $event) {
         dump($event->getRequest());
         die;
+
+
+    $route_name = $request->get('_route');
+
+    if ($route_name !== 'log_in') {
+        if ($route_name === 'authen_user') {
+            return;
+        }
+        if (! $app['session']->get('user') ) {
+            return $app->redirect($app['url_generator']->generate('log_in'));
+        }
+    }
+
     }
 }

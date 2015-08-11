@@ -67,7 +67,7 @@ class ArticleService {
             ->values($this->quoteValues($options))
         ;
 
-        $this->article_model->getConnection()->executeUpdate($query);
+        return $this->article_model->getConnection()->executeUpdate($query);
     }
 
     public function updateToArticle($id, $data = '') {

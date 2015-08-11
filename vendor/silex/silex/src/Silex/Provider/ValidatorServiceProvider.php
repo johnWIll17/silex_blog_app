@@ -33,7 +33,13 @@ class ValidatorServiceProvider implements ServiceProviderInterface
                 $r = new \ReflectionClass('Symfony\Component\Validator\Validation');
                 $file = dirname($r->getFilename()).'/Resources/translations/validators.'.$app['locale'].'.xlf';
                 if (file_exists($file)) {
-                    $app['translator']->addResource('xliff', $file, $app['locale'], 'validators');
+                    $app->extend('translator.resources', function ($resources, $app) use ($file) {
+                        $resources = array_merge(array(
+                            array('xliff', $file, $app['locale'], 'validators'),
+                        ), $resources);
+
+                        return $resources;
+                    });
                 }
             }
 
@@ -62,14 +68,14 @@ class ValidatorServiceProvider implements ServiceProviderInterface
         });
 
         $app['validator.validator_factory'] = $app->share(function () use ($app) {
-            $validators = isset($app['validator.validator_service_ids']) ? $app['validator.validator_service_ids'] : array();
-
-            return new ConstraintValidatorFactory($app, $validators);
+            return new ConstraintValidatorFactory($app, $app['validator.validator_service_ids']);
         });
 
         $app['validator.object_initializers'] = $app->share(function ($app) {
             return array();
         });
+
+        $app['validator.validator_service_ids'] = array();
     }
 
     public function boot(Application $app)

@@ -67,6 +67,20 @@ class ValidatorServiceProviderTest extends \PHPUnit_Framework_TestCase
     /**
      * @depends testRegister
      */
+    public function testConstraintValidatorFactoryWithExpression($app)
+    {
+        if (!class_exists('Symfony\Component\Validator\Constraints\Expression')) {
+            $this->markTestSkipped('Expression are not supported by this version of Symfony');
+        }
+
+        $constraint = new Assert\Expression('true');
+        $validator = $app['validator.validator_factory']->getInstance($constraint);
+        $this->assertInstanceOf('Symfony\Component\Validator\Constraints\ExpressionValidator', $validator);
+    }
+
+    /**
+     * @depends testRegister
+     */
     public function testValidatorServiceIsAValidator($app)
     {
         $this->assertInstanceOf('Symfony\Component\Validator\ValidatorInterface', $app['validator']);
@@ -89,7 +103,7 @@ class ValidatorServiceProviderTest extends \PHPUnit_Framework_TestCase
         ));
 
         $builder = $app['form.factory']->createBuilder('form', array(), array(
-            'constraints'     => $constraints,
+            'constraints' => $constraints,
             'csrf_protection' => false,
         ));
 
@@ -134,5 +148,43 @@ class ValidatorServiceProviderTest extends \PHPUnit_Framework_TestCase
             array('not an email', false, 0, 1),
             array('email@sample.com', true, 0, 0),
         );
+    }
+
+    public function testAddResource()
+    {
+        $app = new Application();
+        $app['locale'] = 'fr';
+
+        $app->register(new ValidatorServiceProvider());
+        $app->register(new TranslationServiceProvider());
+        $app['translator'] = $app->share($app->extend('translator', function ($translator, $app) {
+            $translator->addResource('array', array('This value should not be blank.' => 'Pas vide'), 'fr', 'validators');
+
+            return $translator;
+        }));
+
+        $app['validator'];
+
+        $this->assertEquals('Pas vide', $app['translator']->trans('This value should not be blank.', array(), 'validators', 'fr'));
+    }
+
+    public function testAddResourceAlternate()
+    {
+        $app = new Application();
+        $app['locale'] = 'fr';
+
+        $app->register(new ValidatorServiceProvider());
+        $app->register(new TranslationServiceProvider());
+        $app->extend('translator.resources', function ($resources, $app) {
+            $resources = array_merge($resources, array(
+                array('array', array('This value should not be blank.' => 'Pas vide'), 'fr', 'validators'),
+            ));
+
+            return $resources;
+        });
+
+        $app['validator'];
+
+        $this->assertEquals('Pas vide', $app['translator']->trans('This value should not be blank.', array(), 'validators', 'fr'));
     }
 }

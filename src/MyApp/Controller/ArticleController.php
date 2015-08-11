@@ -21,6 +21,7 @@ class ArticleController extends BaseController {
         $article_full = $this->app['article.service']->paginate($user_id, $page);
 
         return $this->app['twig']->render('articles/index.html.twig', array(
+            'user_name' => $this->current_user,
             'article_full' => $article_full,
             'page_total' => $this->app['article.service']->totalPageArticle($user_id),
             'current_page' => $page,
@@ -29,11 +30,11 @@ class ArticleController extends BaseController {
     }
     public function newAction() {
         $form = $this->createArticleForm();
-        $user_email = 'test@example.com';
+        //$user_email = $this->;
 
         return $this->app['twig']->render('articles/new.html.twig', array(
             'form' => $form->createView(),
-            'user_email' => $user_email
+            'user_email' => $this->current_user
         ));
     }
 
@@ -56,7 +57,8 @@ class ArticleController extends BaseController {
             return $this->app->redirect($this->app['url_generator']->generate('articles'));
         } else {
             return $this->app['twig']->render('articles/new.html.twig', array(
-                'form' => $form->createView()
+                'form' => $form->createView(),
+                'user_email' => $this->current_user
             ));
         }
     }
@@ -68,13 +70,14 @@ class ArticleController extends BaseController {
         $delete_form = $this->deleteArticleForm($id);
         $comment_form = $this->createCommentForm($id);
 
-        $user_email = 'test@example.com';
+        //$user_email = 'test@example.com';
         return $this->app['twig']->render('articles/show.html.twig', array(
             'article' => $article,
             'delete_form' => $delete_form->createView(),
             'comment_form' => $comment_form->createView(),
             'comments' => $comments,
-            'user_email' => $user_email
+            'user_email' => $this->current_user,
+            'comments' => $comments
         ));
     }
 
@@ -83,11 +86,11 @@ class ArticleController extends BaseController {
         $article = $this->app['article.service']->getById($id);
 
         $form = $this->updateArticleForm($article, $id);
-        $user_email = 'test@example.com';
+        //$user_email = 'test@example.com';
 
         return $this->app['twig']->render('articles/edit.html.twig', array(
             'form' => $form->createView(),
-            'user_email' => $user_email
+            'user_email' => $this->current_user
         ));
     }
 
@@ -102,18 +105,18 @@ class ArticleController extends BaseController {
             $ret = $this->app['article.service']->updateToArticle($id, $form->getData());
 
             if ($ret === 1) {
-                $this->app['session']->getFlashBag()->add('message', array(
-                    'type' => 'success',
-                    'message' => 'You have updated article successfully!'
-                ));
+                // $this->app['session']->getFlashBag()->add('message', array(
+                //     'type' => 'success',
+                //     'message' => 'You have updated article successfully!'
+                // ));
 
                 return $this->app->redirect($this->app['url_generator']->generate('article_show', array('id' => $id)));
             }
 
         } else {
-
             return $this->app['twig']->render('articles/edit.html.twig', array(
-                'form' => $form->createView()
+                'form' => $form->createView(),
+                'user_email' => $this->current_user
             ));
         }
 
@@ -159,7 +162,12 @@ class ArticleController extends BaseController {
                 'action' => $this->app['url_generator']->generate('article_delete', array('id' => $id)),
                 'method' => 'DELETE'
             ))
-            ->add('submit', 'submit', array('label' => 'Delete Article'))
+            ->add('submit', 'submit', array(
+                'label' => 'Delete Article',
+                'attr' => array(
+                    'class' => 'btn btn-danger delete-button'
+                )
+            ))
             ->getForm()
         ;
     }

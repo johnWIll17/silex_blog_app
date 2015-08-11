@@ -55,7 +55,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
 
-$dispatcher = $app['dispatcher'];
 // $listener = new AuthenUserListener();
 // $dispatcher->addListener('kernel.request', array($listener, 'testAuthenListener'), 100);
 // $dispatcher->dispatch(KernelEvents::REQUEST, $listener);
@@ -71,10 +70,11 @@ $dispatcher = $app['dispatcher'];
 //     }
 // });
 
+$dispatcher = $app['dispatcher'];
 use MyApp\Controller\UserController;
 $user_c = new UserController($app);
 $dispatcher->addListener(KernelEvents::REQUEST, array($user_c, 'testAuth'));
-
+//
 
 
 

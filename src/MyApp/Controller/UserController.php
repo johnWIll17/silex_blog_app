@@ -18,19 +18,46 @@ class UserController extends BaseController {
 
     public function testAuth(GetResponseEvent $event) {
         //if (! $this->app['session']->get('hello worl') ) {
-        if ($this->app['request']->get('_route') !== 'article_new') {
-            //exit();
-            
-            // $event->setResponse($this->app['url_generator']->generate('article_new'));
-            //$response = new Response($this->app->redirect($this->app['url_generator']->generate('article_new')));
-            $response = new RedirectResponse( $this->app['url_generator']->generate('article_new') );
+        // if ($this->app['request']->get('_route') !== 'article_new') {
+        //     //exit();
+        //
+        //     // $event->setResponse($this->app['url_generator']->generate('article_new'));
+        //     //$response = new Response($this->app->redirect($this->app['url_generator']->generate('article_new')));
+        //     $response = new RedirectResponse( $this->app['url_generator']->generate('article_new') );
+        //
+        //
+        //     $event->setResponse($response);
+        //
+        //     // return $this->app->redirect($this->app['url_generator']->generate('article_new'));
+        // }
+        //
 
+        $route_name = $this->app['request']->get('_route');
+        // dump($route_name);
+        // die;
 
-            $event->setResponse($response);
+        if ($route_name !== 'log_in') {
+        //if ($route_name !== 'log_in' || $route_name === 'authen_user') {
+            if ($route_name === 'authen_user') {
+                return;
+            }
+            if (! $this->app['session']->get('user') ) {
+                // return $this->app->redirect($this->app['url_generator']->generate('log_in'));
 
-            // return $this->app->redirect($this->app['url_generator']->generate('article_new'));
+                $response = new RedirectResponse( $this->app['url_generator']->generate('log_in') );
+                $event->setResponse($response);
+            }
+        } else {
+            if ($this->app['session']->get('user')) {
+                $response = new RedirectResponse( $this->app['url_generator']->generate('articles') );
+
+                $event->setResponse($response);
+            }
         }
+
+
     }
+
 
     public function loginAction() {
         $form = $this->createLoginForm();

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.3.1 (2015-08-04)
+------------------
+
+* added missing support for the Expression constraint
+* fixed the possibility to override translations for validator error messages
+* fixed sub-mounts with same name clash
+* fixed session logout handler when a firewall is stateless
+
 1.3.0 (2015-06-05)
 ------------------
 
