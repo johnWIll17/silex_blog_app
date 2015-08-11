@@ -12,10 +12,6 @@ class ArticleServiceTest extends \PHPUnit_Framework_TestCase {
     protected $app;
 
 
-    public function testadd() {
-        $this->assertEquals(5, 5, 'skhfklsd');
-    }
-
     public function __construct() {
         // $config = new \Doctrine\DBAL\Configuration();
         // $conParams = array(
@@ -36,18 +32,18 @@ class ArticleServiceTest extends \PHPUnit_Framework_TestCase {
 
     public function testGetById() {
         // var_dump($this->app);
-        $article = $this->article_service->getById(25);
+        $article = $this->article_service->getById(107);
 
         $this->assertEquals(
             $article['id'],
-            25,
-            'error kshdfk'
+            107,
+            'get individual article fails'
         );
     }
 
     public function testInsertToArticle() {
         $data = array(
-            'user_id' => '25',
+            'user_id' => '1',
             'title' => 'test title',
             'description' => 'test description'
         );
@@ -57,20 +53,20 @@ class ArticleServiceTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(
             $article,
             1,
-            'No row was addded'
+            'Insert fails'
         );
 
     }
 
     public function testDeleteById() {
         $this->app['article.service']->insertToArticle(array(
-            'id' => '100',
-            'user_id' => '25',
+            'id' => '200',
+            'user_id' => '1',
             'title' => 'new test insert',
             'description' => 'new description insert'
         ));
 
-        $ret = $this->app['article.service']->deleteById(100);
+        $ret = $this->app['article.service']->deleteById(200);
 
         $this->assertEquals(
             $ret,
@@ -80,7 +76,14 @@ class ArticleServiceTest extends \PHPUnit_Framework_TestCase {
     }
 
     public function testUpdateToArticle() {
-        $ret = $this->app['article.service']->updateToArticle(100, array(
+        $this->app['article.service']->insertToArticle(array(
+            'id' => '150',
+            'user_id' => '1',
+            'title' => 'test update',
+            'description' => 'test update desc'
+        ));
+
+        $ret = $this->app['article.service']->updateToArticle(150, array(
             'title' => 'new updated title'
         ));
 
@@ -89,6 +92,8 @@ class ArticleServiceTest extends \PHPUnit_Framework_TestCase {
             1,
             'update fails'
         );
+
+        $this->app['article.service']->deleteById(150);
     }
 
 
